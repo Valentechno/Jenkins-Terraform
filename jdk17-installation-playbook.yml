@@ -1,0 +1,43 @@
+- name: Install Java JDK 17
+  hosts: Jenkins
+  become: true
+  tasks:
+    - name: Update Package Repo (Ubuntu)
+      command: "apt-get update"
+      when: ansible_os_family == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Update Package Repo (RedHat)
+      command: "yum update"
+      when: ansible_os_family == 'RedHat' or ansible_distribution == 'CentOS'
+
+    - name: Update Package Repo (Windows)
+      command: "choco upgrade"
+      when: ansible_os_family == 'Windows'
+
+    - name: Update Package Repo (MacOS)
+      command: "brew update"
+      when: ansible_system == 'Darwin'
+
+    - name: Install Java Open JDK 17 (Ubuntu)
+      when: ansible_os_family == 'Debian' or ansible_distribution == 'Ubuntu'
+      package: 
+        name: openjdk-17-jdk
+        state: present 
+
+    - name: Install Java Open JDK 17 (RedHat)
+      when: ansible_os_family == 'RedHat' or ansible_distribution == 'CentOS'
+      package: 
+        name: java-17-openjdk-devel
+        state: present 
+
+    - name: Install Java Open JDK 17 (Windows)
+      when: ansible_os_family == 'Windows'
+      package: 
+        name: openjdk17
+        state: present
+
+    - name: Install Java Open JDK 17 (MacOS)
+      when: ansible_system == 'Darwin'
+      package: 
+        name: openjdk@17
+        state: present
