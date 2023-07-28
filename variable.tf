@@ -16,10 +16,7 @@ variable "instance" {
   default     = "t2.micro"
 }
 
-resource "aws_s3_bucket" "jenkinsartifactsbucket" {
-  bucket = "jenkinsartifactsbucket"
-
-  tags = {
-    Name = "Jenkins s3 Bucket"
-  }
+variable "key_name" {
+  type = string
+  default = "jenkinskey"
 }

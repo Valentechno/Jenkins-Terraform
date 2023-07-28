@@ -5,12 +5,23 @@ resource "aws_instance" "jenkins_server" {
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
   subnet_id              = aws_subnet.tools_pub_sub.id
   associate_public_ip_address = true
-  count = 2
+  count = 1
+  key_name = aws_key_pair.generated_key.key_name
 
 
   tags = {
     Name = "TF-Jenkins-Server${count.index + 1}"
   }
+}
+
+resource "tls_private_key" "rsa-key" {
+  algorithm = "RSA"
+  rsa_bits = 4096
+}
+
+resource "aws_key_pair" "generated_key" {
+  key_name = var.key_name
+  public_key = tls_private_key.rsa-key.public_key_openssh
 }
 
 resource "aws_security_group" "jenkins_sg" {
@@ -95,4 +106,9 @@ resource "aws_route_table" "public_rt" {
 resource "aws_route_table_association" "rt_sub_association" {
   subnet_id      = aws_subnet.tools_pub_sub.id
   route_table_id = aws_route_table.public_rt.id
+}
+
+output "private_key" {
+  value = tls_private_key.rsa-key.private_key_pem
+  sensitive = true
 }
